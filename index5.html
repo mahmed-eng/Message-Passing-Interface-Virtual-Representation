@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI Virtual Representation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #processors-container {
+            display: flex;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .processor {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #333;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-radius: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .processor:hover {
+            background-color: #f0f0f0;
+        }
+
+        label {
+            margin-right: 10px;
+            color: #555;
+        }
+
+        input {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3367d6;
+        }
+    </style>
+</head>
+<body>
+
+<h1>MPI Virtual Representation</h1>
+
+<div id="processors-container">
+    <!-- Processors will be dynamically added here -->
+</div>
+
+<div>
+    <label for="message">Enter Message:</label>
+    <input type="text" id="message">
+    <button onclick="sendMessage()">Send Message</button>
+</div>
+
+<script>
+    const processors = [
+        { id: 1, state: 'Idle', message: '' },
+        { id: 2, state: 'Idle', message: '' },
+        { id: 3, state: 'Idle', message: '' },
+    ];
+
+    function renderProcessors() {
+        const processorsContainer = document.getElementById('processors-container');
+        processorsContainer.innerHTML = processors.map(processor =>
+            `<div class="processor" id="processor-${processor.id}">
+                <div>${processor.id}</div>
+                <div>${processor.state}</div>
+                <div>${processor.message}</div>
+            </div>`
+        ).join('');
+    }
+
+    function sendMessage() {
+        const senderIndex = Math.floor(Math.random() * processors.length);
+        const receiverIndex = Math.floor(Math.random() * processors.length);
+        const messageInput = document.getElementById('message');
+        const message = messageInput.value;
+
+        if (senderIndex !== receiverIndex && message.trim() !== '') {
+            processors[senderIndex].state = 'Sending';
+            processors[receiverIndex].state = 'Receiving';
+            processors[senderIndex].message = '';
+            processors[receiverIndex].message = 'Receiving...';
+            renderProcessors();
+
+            setTimeout(() => {
+                processors[senderIndex].state = 'Idle';
+                processors[receiverIndex].state = 'Idle';
+                processors[receiverIndex].message = message;
+                processors[senderIndex].message = '';
+                renderProcessors();
+            }, 2000); // Simulate delay
+        }
+    }
+
+    renderProcessors(); // Initial rendering
+</script>
+
+</body>
+</html>
